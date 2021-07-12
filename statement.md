@@ -61,7 +61,8 @@ Full example:
 
 /* the rest of the owl ... */
 
-#include <iostream> // warning! include headers *after* compile options
+// warning! include headers *after* compile options
+#include <iostream> 
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -75,12 +76,12 @@ using namespace std;
 * CodinGame does not allow inspection of compiled binary.
 * Compiler Explorer at godbolt.org
 
-Compile settings basically the same as CodinGame (notice the lack of march=native):
+Compile settings basically the same as CodinGame (notice the lack of `march=native`):
 ```
 gcc-10 -g -std=c++17 -lm -lpthread -ldl -lcrypt
 ```
 
-### LZCNT
+### #pragma GCC target("lzcnt")
 
 Try to compile this snippet (with and without pragma):
 ```C++
@@ -93,7 +94,7 @@ int leading_zeros(unsigned x) // count leading 0-bits
 ```
 
 We expect to see `LZCNT` in the assembler instructions:
-```
+```ASM
 leading_zeros(unsigned int):
         xor     eax, eax
         lzcnt   eax, edi
@@ -101,14 +102,14 @@ leading_zeros(unsigned int):
 ```
 
 It should NOT look like this:
-```
+```ASM
 leading_zeros(unsigned int):
         bsr     eax, edi
         xor     eax, 31
         ret
 ```
 
-### Inline
+### #pragma GCC optimize("inline")
 
 Snippet:
 ```C++
@@ -119,7 +120,7 @@ int bar() { return foo(); }
 ```
 
 Expected:
-```
+```ASM
 foo():
         mov     eax, 12
         ret
@@ -129,7 +130,7 @@ bar():
 ```
 
 Failure:
-```
+```ASM
 foo():
         mov     eax, 12
         ret
