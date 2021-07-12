@@ -8,7 +8,7 @@
 
 * GCC will use generic CPU type if not set.
 * Generic CPU machine lacks many x86 instructions (POPCNT, etc).
-* Test for POPCNT to detect if march=native is already set.
+* Test for POPCNT to detect if `march=native` is already set.
 
 ```C++
 #ifndef __POPCNT__ // not march=native
@@ -20,7 +20,7 @@
 
 ## Configure 
 
-* Ideally set `march=native` in pragma.  Sadly, this does not work.
+* Ideally, set `march=native` in pragma.  Sadly, this does not work.
 * Use instruction targets for "haswell" or "core-avx2".
 
 The bare minimum is:
@@ -74,7 +74,7 @@ using namespace std;
 
 * How to detect if options are working?
 * CodinGame does not allow inspection of compiled binary.
-* Compiler Explorer at godbolt.org
+* Compiler Explorer at [godbolt.org](https://godbolt.org/)
 
 Compile settings basically the same as CodinGame (notice the lack of `march=native`):
 ```
@@ -94,7 +94,7 @@ int leading_zeros(unsigned x) // count leading 0-bits
 ```
 
 We expect to see `LZCNT` in the assembler instructions:
-```ASM
+```Python
 leading_zeros(unsigned int):
         xor     eax, eax
         lzcnt   eax, edi
@@ -102,7 +102,7 @@ leading_zeros(unsigned int):
 ```
 
 It should NOT look like this:
-```ASM
+```Python
 leading_zeros(unsigned int):
         bsr     eax, edi
         xor     eax, 31
@@ -120,7 +120,7 @@ int bar() { return foo(); }
 ```
 
 Expected:
-```ASM
+```Python
 foo():
         mov     eax, 12
         ret
@@ -130,7 +130,7 @@ bar():
 ```
 
 Failure:
-```ASM
+```Python
 foo():
         mov     eax, 12
         ret
