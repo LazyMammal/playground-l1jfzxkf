@@ -1,15 +1,14 @@
 # Using Pragma For Compile Optimization
 
 * Adjust compile settings without access to command line.
-* Detect if `march=native` is already set.
 * Not all command line compile flags can be replicated.
 
 ## Configure 
 
-* Ideally, set `march=native` in pragma.  Sadly, this does not work.
+* Ideally, set `march=native` in pragma. This does not work.
 * Use instruction targets for "haswell" or "core-avx2".
 
-The bare minimum is:
+The bare minimum:
 ```C++
 #pragma GCC optimize("O3,inline")
 #pragma GCC target("bmi,bmi2,lzcnt,popcnt")
@@ -20,7 +19,7 @@ I would personally recommend adding SIMD as well.  The compiler can use it even 
 #pragma GCC target("avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2") // SIMD
 ```
 
-Also set optimization level. Pick whichever you prefer but at least "O3,inline" to get close to native:
+Pick whichever you prefer but at least "O3,inline" to get close to native:
 ```C++
 #pragma GCC optimize("O3,inline")             // "inline" won't happen without it
 #pragma GCC optimize("O3,fast-math,inline")   // "fast-math" helps auto-vectorize loops
@@ -42,9 +41,7 @@ Full example:
 #pragma GCC target("aes,pclmul,rdrnd")                           // encryption
 #pragma GCC target("avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2") // SIMD
 
-/* the rest of the owl ... */
-
-// warning! include headers *after* compile options
+// caution! include headers *after* compile options
 #include <iostream> 
 #include <string>
 #include <vector>
@@ -70,6 +67,7 @@ Try to compile this snippet (with and without pragma):
 ```C++
 #pragma GCC optimize("O1")
 // #pragma GCC target("lzcnt")
+
 int leading_zeros(unsigned x) // count leading 0-bits
 {
     return __builtin_clz(x); // LZCNT
@@ -77,7 +75,7 @@ int leading_zeros(unsigned x) // count leading 0-bits
 ```
 
 We expect to see `LZCNT` in the assembler instructions:
-```Python
+```
 leading_zeros(unsigned int):
         xor     eax, eax
         lzcnt   eax, edi
@@ -85,7 +83,7 @@ leading_zeros(unsigned int):
 ```
 
 It should NOT look like this:
-```Python
+```
 leading_zeros(unsigned int):
         bsr     eax, edi
         xor     eax, 31
@@ -98,12 +96,13 @@ Snippet:
 ```C++
 #pragma GCC optimize("O1")
 // #pragma GCC optimize("inline")
+
 int foo() { return 12; }
 int bar() { return foo(); }
 ```
 
 Expected:
-```Python
+```
 foo():
         mov     eax, 12
         ret
@@ -113,7 +112,7 @@ bar():
 ```
 
 Failure:
-```Python
+```
 foo():
         mov     eax, 12
         ret
@@ -122,13 +121,14 @@ bar():
         ret
 ```
 
-### More code examples
+## Compiling at home
 
-* https://godbolt.org/z/Whx3v5aeG
+* You may want to compile offline using same source file.
+* Pragma options for Haswell may be wrong for your home computer.
+* Be sure to set `march=native` on command line.
 
 ## Detect march=native
 
-* Useful if you want to compile offline using same source file.
 * GCC will use generic CPU type if not set.
 * Generic CPU machine lacks many x86 instructions (POPCNT, etc).
 * Test for POPCNT to detect if `march=native` is already set.
@@ -140,3 +140,10 @@ bar():
 
 #endif
 ```
+
+### More code examples
+
+* LZCNT, TZCNT, POPCNT
+* SIMD intrinsics
+* Bonus example for Bitboards
+* https://godbolt.org/z/Whx3v5aeG
