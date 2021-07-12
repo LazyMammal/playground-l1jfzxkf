@@ -5,7 +5,7 @@
 
 ## Configure 
 
-* Ideally, set `march=native` in pragma. This does not work.
+* Ideally, set `march=native` in pragma but this does not work.
 * Use instruction targets for "haswell" or "core-avx2".
 
 The bare minimum:
@@ -41,7 +41,7 @@ Full example:
 #pragma GCC target("aes,pclmul,rdrnd")                           // encryption
 #pragma GCC target("avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2") // SIMD
 
-// caution! include headers *after* compile options
+// Caution! Include headers *after* compile options.
 #include <iostream> 
 #include <string>
 #include <vector>
@@ -55,8 +55,7 @@ using namespace std;
 * How to detect if options are working?
 * CodinGame does not allow inspection of compiled binary.
 * Compiler Explorer at [godbolt.org](https://godbolt.org/)
-
-Compile settings basically the same as CodinGame (notice the lack of `march=native`):
+* Compile settings basically the same as CodinGame (notice the lack of `march=native`):
 ```
 gcc-10 -g -std=c++17 -lm -lpthread -ldl -lcrypt
 ```
@@ -74,7 +73,7 @@ int leading_zeros(unsigned x) // count leading 0-bits
 }
 ```
 
-We expect to see `LZCNT` in the assembler instructions:
+We expect to see `LZCNT` in the assembly instructions:
 ```
 leading_zeros(unsigned int):
         xor     eax, eax
@@ -101,7 +100,7 @@ int foo() { return 12; }
 int bar() { return foo(); }
 ```
 
-Expected:
+Expect:
 ```
 foo():
         mov     eax, 12
@@ -134,7 +133,7 @@ bar():
 * Test for POPCNT to detect if `march=native` is already set.
 
 ```C++
-#ifndef __POPCNT__ // not march=native
+#ifndef __POPCNT__
 
 // compile options so CodinGame can behave more like native compile
 
