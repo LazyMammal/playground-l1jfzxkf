@@ -4,20 +4,6 @@
 * Detect if `march=native` is already set.
 * Not all command line compile flags can be replicated.
 
-## Detect march=native
-
-* GCC will use generic CPU type if not set.
-* Generic CPU machine lacks many x86 instructions (POPCNT, etc).
-* Test for POPCNT to detect if `march=native` is already set.
-
-```C++
-#ifndef __POPCNT__ // not march=native
-
-// compile options so CodinGame can behave more like native compile
-
-#endif
-```
-
 ## Configure 
 
 * Ideally, set `march=native` in pragma.  Sadly, this does not work.
@@ -25,7 +11,8 @@
 
 The bare minimum is:
 ```C++
-#pragma GCC target("bmi,bmi2,lzcnt,popcnt") // bit manipulation
+#pragma GCC optimize("O3,inline")
+#pragma GCC target("bmi,bmi2,lzcnt,popcnt")
 ```
 
 I would personally recommend adding SIMD as well.  The compiler can use it even if you don't code the instructions yourself:
@@ -47,8 +34,6 @@ Finally, hint to GLIBCXX to run faster:
 
 Full example:
 ```C++
-#ifndef __POPCNT__ // not march=native
-
 #undef _GLIBCXX_DEBUG                // disable run-time bound checking, etc
 #pragma GCC optimize("Ofast,inline") // Ofast = O3,fast-math,allow-store-data-races,no-protect-parens
 
@@ -56,8 +41,6 @@ Full example:
 #pragma GCC target("movbe")                                      // byte swap
 #pragma GCC target("aes,pclmul,rdrnd")                           // encryption
 #pragma GCC target("avx,avx2,f16c,fma,sse3,ssse3,sse4.1,sse4.2") // SIMD
-
-#endif // end !POPCNT
 
 /* the rest of the owl ... */
 
@@ -143,3 +126,17 @@ bar():
 
 * https://godbolt.org/z/Whx3v5aeG
 
+## Detect march=native
+
+* Useful if you want to compile offline using same source file.
+* GCC will use generic CPU type if not set.
+* Generic CPU machine lacks many x86 instructions (POPCNT, etc).
+* Test for POPCNT to detect if `march=native` is already set.
+
+```C++
+#ifndef __POPCNT__ // not march=native
+
+// compile options so CodinGame can behave more like native compile
+
+#endif
+```
